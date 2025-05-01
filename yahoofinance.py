@@ -65,7 +65,10 @@ class StockPredictor():
 
         # Calculate time difference
         delta = ending_date - starting_date
-        fraction = percent / 100.0
+        try:
+            fraction = float(percent) / 100.0
+        except Exception as e:
+            print("Error!: ", e)
         
         # Calculate target date
         result_date = starting_date + (delta * fraction)
@@ -89,8 +92,13 @@ class StockPredictor():
             return np.array(X), np.array(y)
 
         sequence_length = 60
-        target_col_idx = 3  # Index of "Close" in the feature matrix
 
+        try:
+            target_col_idx = train_scaled.columns.get_loc('Close') #dynamic column for target variable.
+            print(f"The 'Close' column is at index: {target_col_idx}")
+        except Exception:
+            target_col_idx = 3  # Index of "Close" in the feature matrix
+        
         self.X_train, self.y_train = create_sequences(train_scaled, sequence_length, target_col_idx)
         self.X_test, self.y_test = create_sequences(test_scaled, sequence_length, target_col_idx)
 
